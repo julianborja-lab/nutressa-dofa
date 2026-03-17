@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis DOFA - Grupo Nutresa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #4facfe);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Partículas de fondo */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 20s infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        h1 {
+            position: relative;
+            z-index: 10;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+            animation: slideDown 1s ease;
+        }
+
+        h1::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, white, transparent);
+            margin: 15px auto;
+            border-radius: 2px;
+        }
+
+        /* CONTENEDOR PRINCIPAL */
+        .dofa-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 25px;
+            width: 90%;
+            max-width: 1200px;
+            height: 75vh;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* CAJAS CON EFECTO 3D */
+        .box {
+            position: relative;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.18);
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease backwards;
+        }
+
+        .box:nth-child(1) { animation-delay: 0.1s; }
+        .box:nth-child(2) { animation-delay: 0.2s; }
+        .box:nth-child(3) { animation-delay: 0.3s; }
+        .box:nth-child(4) { animation-delay: 0.4s; }
+
+        .box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .box:hover::before {
+            left: 100%;
+        }
+
+        .box:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        /* COLORES Y ESTILOS ESPECÍFICOS */
+        .box.fortalezas {
+            border-top: 5px solid #2ecc71;
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.1) 0%, rgba(255,255,255,0.95) 100%);
+        }
+
+        .box.fortalezas .icon {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+
+        .box.debilidades {
+            border-top: 5px solid #e74c3c;
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.1) 0%, rgba(255,255,255,0.95) 100%);
+        }
+
+        .box.debilidades .icon {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .box.oportunidades {
+            border-top: 5px solid #3498db;
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1) 0%, rgba(255,255,255,0.95) 100%);
+        }
+
+        .box.oportunidades .icon {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+
+        .box.amenazas {
+            border-top: 5px solid #f39c12;
+            background: linear-gradient(135deg, rgba(243, 156, 18, 0.1) 0%, rgba(255,255,255,0.95) 100%);
+        }
+
+        .box.amenazas .icon {
+            background: linear-gradient(135deg, #f39c12, #d68910);
+        }
+
+        /* ICONOS */
+        .icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+
+        .box:hover .icon {
+            transform: rotate(360deg) scale(1.1);
+        }
+
+        .icon i {
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .content {
+            text-align: center;
+        }
+
+        .title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2c3e50;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            font-weight: 400;
+        }
+
+        .click-hint {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #95a5a6;
+            background: rgba(0,0,0,0.05);
+            padding: 8px 20px;
+            border-radius: 25px;
+            transition: all 0.3s;
+        }
+
+        .box:hover .click-hint {
+            background: rgba(0,0,0,0.1);
+            transform: scale(1.05);
+        }
+
+        .click-hint i {
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* MODAL MEJORADO */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
+            animation: fadeIn 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            margin: 3% auto;
+            padding: 0;
+            border-radius: 25px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            animation: modalSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            border-radius: 25px 25px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .modal-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .modal-title i {
+            font-size: 2.5rem;
+        }
+
+        .close-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .close-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 40px;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .modal-body > p {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            margin-bottom: 25px;
+            font-style: italic;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
+
+        .section:hover {
+            transform: translateX(5px);
+        }
+
+        .section strong {
+            color: #667eea;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .section strong i {
+            font-size: 1.3rem;
+        }
+
+        .section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .section li {
+            padding: 12px 0;
+            padding-left: 35px;
+            position: relative;
+            border-bottom: 1px solid #ecf0f1;
+            transition: all 0.3s;
+        }
+
+        .section li:last-child {
+            border-bottom: none;
+        }
+
+        .section li:hover {
+            background: #f8f9fa;
+            padding-left: 40px;
+        }
+
+        .section li::before {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #2ecc71;
+            font-size: 1rem;
+            transition: transform 0.3s;
+        }
+
+        .section li:hover::before {
+            transform: scale(1.3);
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .highlight-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        }
+
+        .highlight-box strong {
+            color: white;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .highlight-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .highlight-box li {
+            padding: 8px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .highlight-box li::before {
+            content: '\f058';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: white;
+        }
+
+        /* ANIMACIONES */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-100px) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* SCROLLBAR PERSONALIZADO */
+        .modal-content::-webkit-scrollbar,
+        .modal-body::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .modal-content::-webkit-scrollbar-track,
+        .modal-body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb,
+        .modal-body::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb:hover,
+        .modal-body::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #764ba2, #667eea);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .dofa-container {
+                grid-template-columns: 1fr;
+                height: auto;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .box {
+                min-height: 150px;
+            }
+
+            .modal-content {
+                margin: 0;
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+                max-height: 100vh;
+            }
+
+            .modal-header {
+                border-radius: 0;
+            }
+
+            .modal-body {
+                padding: 25px;
+            }
+        }
+
+        /* EFECTO DE CARGA */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader-content {
+            text-align: center;
+        }
+
+        .loader-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loader-text {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loader -->
+    <div class="loader" id="loader">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <div class="loader-text">Cargando DOFA...</div>
+        </div>
+    </div>
+
+    <!-- Partículas de fondo -->
+    <div class="particles" id="particles"></div>
+
+    <h1><i class="fas fa-chart-line"></i> Análisis DOFA - Grupo Nutresa</h1>
+
+    <div class="dofa-container">
+        
+        <!-- FORTALEZAS -->
+        <div class="box fortalezas" onclick="openModal('modal-fortalezas')">
+            <div class="icon">
+                <i class="fas fa-dumbbell"></i>
+            </div>
+            <div class="content">
+                <div class="title">Fortalezas</div>
+                <div class="subtitle">Capacidades internas</div>
+                <div class="click-hint">
+                    <span>Click para explorar</span>
+                    <i class="fas fa-mouse-pointer"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- OPORTUNIDADES -->
+        <div class="box oportunidades" onclick="openModal('modal-oportunidades')">
+            <div class="icon">
+                <i class="fas fa-rocket"></i>
+            </div>
+            <div class="content">
+                <div class="title">Oportunidades</div>
+                <div class="subtitle">Digitalización y Expansión</div>
+                <div class="click-hint">
+                    <span>Click para explorar</span>
+                    <i class="fas fa-mouse-pointer"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- DEBILIDADES -->
+        <div class="box debilidades" onclick="openModal('modal-debilidades')">
+            <div class="icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="content">
+                <div class="title">Debilidades</div>
+                <div class="subtitle">Áreas de mejora</div>
+                <div class="click-hint">
+                    <span>Click para explorar</span>
+                    <i class="fas fa-mouse-pointer"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- AMENAZAS -->
+        <div class="box amenazas" onclick="openModal('modal-amenazas')">
+            <div class="icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="content">
+                <div class="title">Amenazas</div>
+                <div class="subtitle">Factores externos</div>
+                <div class="click-hint">
+                    <span>Click para explorar</span>
+                    <i class="fas fa-mouse-pointer"></i>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL FORTALEZAS -->
+    <div id="modal-fortalezas" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" style="background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);">
+                <div class="modal-title">
+                    <i class="fas fa-dumbbell"></i>
+                    Fortalezas
+                </div>
+                <button class="close-btn" onclick="closeModal('modal-fortalezas')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Capacidades internas que posicionan a Nutresa como líder en la industria alimentaria:</p>
+                
+                <div class="section">
+                    <strong><i class="fas fa-star"></i> Principales Fortalezas</strong>
+                    <ul>
+                        <li>Portafolio diversificado de productos de alta calidad</li>
+                        <li>Fuerte distribución nacional en Colombia</li>
+                        <li>Reconocimiento de marca consolidado por más de 100 años</li>
+                        <li>Capacidad instalada moderna y tecnología de punta</li>
+                        <li>Equipo humano altamente calificado</li>
+                        <li>Sólida posición financiera</li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box">
+                    <strong><i class="fas fa-lightbulb"></i> Nota Importante</strong>
+                    <p>Esta sección está pendiente de tu información completa. Agrega las fortalezas específicas de Nutresa para completar el análisis.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL OPORTUNIDADES -->
+    <div id="modal-oportunidades" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);">
+                <div class="modal-title">
+                    <i class="fas fa-rocket"></i>
+                    Oportunidades
+                </div>
+                <button class="close-btn" onclick="closeModal('modal-oportunidades')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Áreas clave para mantener el liderazgo y competir globalmente:</p>
+                
+                <div class="section">
+                    <strong><i class="fas fa-globe-americas"></i> 1. Expansión Internacional</strong>
+                    <ul>
+                        <li>Penetración en mercados emergentes (África, Asia)</li>
+                        <li>Alianzas con multinacionales para logística</li>
+                        <li>Exportación de productos saludables (orgánicos, veganos) a Europa/EE.UU.</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <strong><i class="fas fa-flask"></i> 2. Innovación en Productos</strong>
+                    <ul>
+                        <li>Alimentos funcionales (probióticos, proteínas vegetales)</li>
+                        <li>Snacks bajos en azúcar/grasas (consumo consciente)</li>
+                        <li>Empaques biodegradables y certificaciones ambientales</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <strong><i class="fas fa-laptop-code"></i> 3. Transformación Digital</strong>
+                    <ul>
+                        <li>E-commerce propio (venta directa)</li>
+                        <li>Apps de nutrición personalizada y fidelización</li>
+                        <li>Big Data e IA para tendencias y cadena de suministro</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <strong><i class="fas fa-heartbeat"></i> 4. Salud y Sostenibilidad</strong>
+                    <ul>
+                        <li>Conciencia post-pandemia sobre alimentación balanceada</li>
+                        <li>Certificaciones de comercio justo</li>
+                        <li>Programas de educación nutricional en comunidades</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <strong><i class="fas fa-industry"></i> 5. Infraestructura</strong>
+                    <ul>
+                        <li>Nuevas plantas en países clave (Ecuador, EE.UU.) para producción local</li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box">
+                    <strong><i class="fas fa-bullseye"></i> Recomendación Estratégica</strong>
+                    <ul>
+                        <li>Priorizar digitalización y productos saludables</li>
+                        <li>Fortalecer presencia internacional mediante alianzas</li>
+                        <li>Invertir en sostenibilidad y economía circular</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DEBILIDADES -->
+    <div id="modal-debilidades" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+                <div class="modal-title">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Debilidades
+                </div>
+                <button class="close-btn" onclick="closeModal('modal-debilidades')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Limitaciones internas que requieren atención y mejora:</p>
+                
+                <div class="section">
+                    <strong><i class="fas fa-chart-line"></i> Áreas de Mejora</strong>
+                    <ul>
+                        <li>Dependencia de materias primas importadas</li>
+                        <li>Lentitud en adopción tecnológica en ciertas áreas</li>
+                        <li>Costos operativos elevados en algunas líneas</li>
+                        <li>Necesidad de mayor agilidad en innovación</li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+                    <strong><i class="fas fa-lightbulb"></i> Nota</strong>
+                    <p>Esta sección está pendiente de tu información completa. Agrega las debilidades específicas identificadas en el análisis.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL AMENAZAS -->
+    <div id="modal-amenazas" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" style="background: linear-gradient(135deg, #f39c12 0%, #d68910 100%);">
+                <div class="modal-title">
+                    <i class="fas fa-shield-alt"></i>
+                    Amenazas
+                </div>
+                <button class="close-btn" onclick="closeModal('modal-amenazas')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Factores externos de riesgo que pueden afectar el desempeño:</p>
+                
+                <div class="section">
+                    <strong><i class="fas fa-exclamation-circle"></i> Principales Amenazas</strong>
+                    <ul>
+                        <li>Competidores globales (Nestlé, Mondelez) ganando terreno</li>
+                        <li>Volatilidad en precios de materias primas</li>
+                        <li>Cambios en regulaciones sanitarias</li>
+                        <li>Fluctuación del dólar</li>
+                        <li>Nuevas tendencias de consumo que requieren adaptación rápida</li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box" style="background: linear-gradient(135deg, #f39c12 0%, #d68910 100%);">
+                    <strong><i class="fas fa-lightbulb"></i> Nota</strong>
+                    <p>Esta sección está pendiente de tu información completa. Agrega las amenazas específicas del entorno competitivo.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Ocultar loader cuando cargue la página
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+            }, 1000);
+        });
+
+        // Crear partículas
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 30;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (Math.random() * 20 + 10) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        createParticles();
+
+        // Función para abrir modal
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Función para cerrar modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Cerrar modal al hacer click fuera
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Cerrar modal con tecla ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const modals = document.querySelectorAll('.modal');
+                modals.forEach(modal => {
+                    modal.style.display = 'none';
+                });
+                document.body.style.overflow = 'auto';
+            }
+        });
+
+        // Animación suave al hacer scroll en modales
+        document.querySelectorAll('.modal-content').forEach(modal => {
+            modal.addEventListener('scroll', function() {
+                const scrolled = this.scrollTop;
+                this.style.boxShadow = `0 ${25 + scrolled/10}px ${80 + scrolled/5}px rgba(0,0,0,0.4)`;
+            });
+        });
+    </script>
+
+</body>
+</html>
